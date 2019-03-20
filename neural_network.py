@@ -135,10 +135,10 @@ def predict(x, weights=None, bias=None):
   if weights is None:
     weights = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.matrix)
     bias = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.ndarray)
-    weights[0] = np.load("output/weights_1.npy")
-    weights[1] = np.load("output/weights_2.npy")
-    bias[0] = np.load("output/bias_1.npy")
-    bias[1] = np.load("output/bias_2.npy")
+    weights[0] = np.load("neural_network/weights_1.npy")
+    weights[1] = np.load("neural_network/weights_2.npy")
+    bias[0] = np.load("neural_network/bias_1.npy")
+    bias[1] = np.load("neural_network/bias_2.npy")
   h = feed_forward(x, weights, bias)
   return np.argmax(h[-1], axis=0)
 

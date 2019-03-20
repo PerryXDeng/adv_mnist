@@ -74,19 +74,19 @@ def main():
   bias = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.ndarray)
   inp = input("Continue training from saved parameters? (y/n)\n").strip()
   if inp == "y":
-    weights[0] = np.load("output/weights_1.npy")
-    weights[1] = np.load("output/weights_2.npy")
-    bias[0] = np.load("output/bias_1.npy")
-    bias[1] = np.load("output/bias_2.npy")
+    weights[0] = np.load("neural_network/weights_1.npy")
+    weights[1] = np.load("neural_network/weights_2.npy")
+    bias[0] = np.load("neural_network/bias_1.npy")
+    bias[1] = np.load("neural_network/bias_2.npy")
   else:
     rand_init_weights(weights, bias)
   weights, bias = gradient_descent(weights, bias)
   inp = input("Save trained parameters? (y/n)\n").strip()
   if inp == "y":
-    np.save("output/weights_1.npy", weights[0])
-    np.save("output/bias_1.npy", bias[0])
-    np.save("output/weights_2.npy", weights[1])
-    np.save("output/bias_2.npy", bias[1])
+    np.save("neural_network/weights_1.npy", weights[0])
+    np.save("neural_network/bias_1.npy", bias[0])
+    np.save("neural_network/weights_2.npy", weights[1])
+    np.save("neural_network/bias_2.npy", bias[1])
 
 
 if __name__ == "__main__":

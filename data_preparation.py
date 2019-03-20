@@ -2,6 +2,7 @@ import neural_network_configuration as conf
 import numpy as np
 import mnist_loader.mnist
 import PIL.Image
+import scipy.misc
 
 
 def vectorized_label(label):
@@ -57,10 +58,34 @@ def load_datasets():
   return normalize(x_train), y_train, normalize(x_test), y_test, l_train, l_test
 
 
-def save_image(x):
+def save_image(x, filename):
   """
   turns one row of gray scale values into a png image, then saves it
   :param x: vector
   """
   matrix = np.reshape(x, (conf.IMAGE_LENGTH, conf.IMAGE_LENGTH))
-  #img = PIL.Image.fromarray(matrix, )
+  img = PIL.Image.fromarray(matrix, "L")
+  img.save(filename)
+
+
+def find_and_save_sample_images():
+  _, _, x_test, l_test = mnist_loader.mnist.load()
+  needed = [True] * 10
+  found = 0
+  for i in range(l_test.shape[0]):
+    label = l_test[i]
+    if needed[label]:
+      save_image(x_test[i], "sample_images/" + str(label) + ".png")
+      needed[label] = False
+      found += 1
+    if found == 10:
+      break
+
+def load_sample_image(label):
+  filepath = "sample_images/" + str(label) + ".png"
+  normalized_vector = normalize(scipy.misc.imread(filepath).flatten())
+  return normalized_vector
+
+
+# if __name__ == "__main__":
+#   load_sample_image(5)
