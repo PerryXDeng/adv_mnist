@@ -44,7 +44,7 @@ def denormalize(x):
   :param x: input
   :return: un-normalized input
   """
-  return x * 255 + 255 / 2
+  return (x * 255 + 255 / 2).astype(np.uint8)
 
 
 def load_datasets():
@@ -58,13 +58,11 @@ def load_datasets():
   return normalize(x_train), y_train, normalize(x_test), y_test, l_train, l_test
 
 
-def save_image(x, filename, normalized=False):
+def save_image(x, filename):
   """
   turns one row of gray scale values into a png image, then saves it
   :param x: vector
   """
-  if normalized:
-    x = denormalize(x)
   matrix = np.reshape(x, (conf.IMAGE_LENGTH, conf.IMAGE_LENGTH))
   img = PIL.Image.fromarray(matrix, "L")
   img.save(filename)
@@ -85,16 +83,18 @@ def find_and_save_sample_images():
     if found == 10:
       break
 
+
+def load_image(file_path):
+  vector = scipy.misc.imread(file_path).flatten()
+  return vector
+
+
 def load_sample_image(label):
   filepath = "sample_images/" + str(label) + ".png"
-  normalized_vector = normalize(scipy.misc.imread(filepath).flatten())
-  return normalized_vector
-
-
-def load_image(filepath):
-  normalized_vector = normalize(scipy.misc.imread(filepath).flatten())
-  return normalized_vector
+  return load_image(filepath)
 
 
 # if __name__ == "__main__":
-#   find_and_save_sample_images()
+#   filepath = "sample_images/3.png"
+#   mat = scipy.misc.imread(filepath).flatten()
+#   print(denormalize(normalize(mat)) == mat)

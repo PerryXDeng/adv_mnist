@@ -64,13 +64,12 @@ def optimize_payload(desired_output, original, label):
     constraint = conf.LAMBDA * np.sum(np.multiply(difference, difference)) / 2
     cost += constraint
     constraint_gradients = difference
-    payload -= conf.LEARNING_RATE * np.squeeze(np.asarray(gradients))
-    payload -= conf.LAMBDA * constraint_gradients
+    payload -= conf.LEARNING_RATE * (np.squeeze(np.asarray(gradients)) + conf.LAMBDA * constraint_gradients)
     epoch += 1
     if epoch % conf.EVAL_INTERVAL == 0:
       print("Epoch %d, Cost %f" % (epoch, cost))
       neural_output = nn.feed_forward(payload, neural_network_weights, neural_network_bias)[-1]
-      if neural_output[label] > conf.THRESHOLD and np.argmax(neural_output) == label:
+      if neural_output[label] > conf.THRESHOLD and np.argmax(neural_output) == label and 0.1 > cost:
         print(neural_output[label])
         print(np.argmax(neural_output))
         print("Mission Accomplished")
@@ -80,10 +79,10 @@ def optimize_payload(desired_output, original, label):
 
 def generate_payload(output_num, looklike_num):
   desired_output = dp.vectorized_label(output_num)
-  original_image = dp.load_sample_image(looklike_num)
+  original_image = dp.normalize(dp.load_sample_image(looklike_num))
   payload = optimize_payload(desired_output, original_image, output_num)
-  dp.save_image(original_image, "payload/original.png")
-  dp.save_image(payload, "payload/output.png")
+  dp.save_image(dp.denormalize(original_image * -1), "payload/original.png")
+  dp.save_image(dp.denormalize(payload * -1), "payload/output.png")
 
 
 def main():
@@ -93,6 +92,4 @@ def main():
 
 
 if __name__ == "__main__":
-#  generate_payload(3, 6)
-  original_image = dp.load_sample_image(3)
-  dp.save_image(original_image, "payload/original.png", normalized=True)
+  main()
