@@ -1,6 +1,7 @@
 import neural_network_configuration as conf
 import numpy as np
 import mnist_loader.mnist
+import PIL.Image
 
 
 def vectorized_label(label):
@@ -36,6 +37,15 @@ def normalize(x):
   return (x - 255 / 2) / 255
 
 
+def denormalize(x):
+  """
+  un-normalizes the input
+  :param x: input
+  :return: un-normalized input
+  """
+  return x * 255 + 255 / 2
+
+
 def load_datasets():
   """
   loads and normalizes the mnist dataset
@@ -45,3 +55,12 @@ def load_datasets():
   y_train = np.hstack([vectorized_label(label) for label in l_train])
   y_test = np.hstack([vectorized_label(label) for label in l_test])
   return normalize(x_train), y_train, normalize(x_test), y_test, l_train, l_test
+
+
+def save_image(x):
+  """
+  turns one row of gray scale values into a png image, then saves it
+  :param x: vector
+  """
+  matrix = np.reshape(x, (conf.IMAGE_LENGTH, conf.IMAGE_LENGTH))
+  #img = PIL.Image.fromarray(matrix, )
