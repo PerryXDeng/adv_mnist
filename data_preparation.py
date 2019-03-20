@@ -1,6 +1,6 @@
 import neural_network_configuration as conf
 import numpy as np
-import mnist_loader.mnist
+import datasets_loader.mnist
 import PIL.Image
 import scipy.misc
 
@@ -52,7 +52,7 @@ def load_datasets():
   loads and normalizes the mnist dataset
   :return: training and testing datasets
   """
-  x_train, l_train, x_test, l_test = mnist_loader.mnist.load()
+  x_train, l_train, x_test, l_test = datasets_loader.mnist.load()
   y_train = np.hstack([vectorized_label(label) for label in l_train])
   y_test = np.hstack([vectorized_label(label) for label in l_test])
   return normalize(x_train), y_train, normalize(x_test), y_test, l_train, l_test
@@ -69,13 +69,15 @@ def save_image(x, filename):
 
 
 def find_and_save_sample_images():
-  _, _, x_test, l_test = mnist_loader.mnist.load()
+  x_train, l_train, _, _ = datasets_loader.mnist.load()
+  images = x_train
+  labels = l_train
   needed = [True] * 10
   found = 0
-  for i in range(l_test.shape[0]):
-    label = l_test[i]
+  for i in range(labels.shape[0]):
+    label = labels[i]
     if needed[label]:
-      save_image(x_test[i], "sample_images/" + str(label) + ".png")
+      save_image(images[i], "sample_images/" + str(label) + ".png")
       needed[label] = False
       found += 1
     if found == 10:
@@ -88,4 +90,4 @@ def load_sample_image(label):
 
 
 # if __name__ == "__main__":
-#   load_sample_image(5)
+#   find_and_save_sample_images()

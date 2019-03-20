@@ -113,15 +113,12 @@ def cost_derivatives(x, y, weights, bias):
       transformations_derivatives[n] = np.multiply(
           np.matmul(next_layer_weights.T, next_layer_transforms_gradients),
           this_layer_activations_gradients)
-    #input_derivatives = np.matmul(weights[0].T,
-    #                              transformations_derivatives[0])
 
     # calculate gradients of weights in relation to their transformations
     for n in range(1, conf.LAYERS_NUM):
       ad = np.r_[np.ones(1), activations[n - 1][:, i]][np.newaxis]
       gradients[n - 1] += \
-          np.matmul(transformations_derivatives[n - 1][np.newaxis].T,
-                    ad)
+          np.matmul(transformations_derivatives[n - 1][np.newaxis].T, ad)
 
   # take their mean
   cost /= x.shape[0]
@@ -132,6 +129,13 @@ def cost_derivatives(x, y, weights, bias):
 
 
 def predict(x, weights=None, bias=None):
+  """
+  gives discrete output (labels) based on input (vectorized images)
+  :param x: input
+  :param weights: weights of the neural network
+  :param bias: biases of the neural network
+  :return: predicted labels
+  """
   if weights is None:
     weights = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.matrix)
     bias = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.ndarray)
@@ -144,6 +148,14 @@ def predict(x, weights=None, bias=None):
 
 
 def accuracy(x, labels, weights, bias):
+  """
+  a performance metric
+  :param x: dataset inputs
+  :param labels: dataset labels
+  :param weights: neural network weights
+  :param bias: neural network biases
+  :return: accuracy between 0 and 1
+  """
   out = predict(x, weights, bias)
   results = [(out[i] == labels[i])
              for i in range(x.shape[0])]
@@ -152,38 +164,38 @@ def accuracy(x, labels, weights, bias):
 
 # def numerical_derivative_approximation(x, y, weights, bias, i, j, l, cost):
 #   # make two copies of the weights and biases
-#   weights_copy = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.matrix)
-#   bias_copy = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.ndarray)
-#   for n in range(1, conf.LAYERS_NUM):
+#   weights_copy = np.ndarray(nn_conf.LAYERS_NUM - 1, dtype=np.matrix)
+#   bias_copy = np.ndarray(nn_conf.LAYERS_NUM - 1, dtype=np.ndarray)
+#   for n in range(1, nn_conf.LAYERS_NUM):
 #     weights_copy[n - 1] = weights[n - 1]
 #     bias_copy[n - 1] = bias[n - 1]
 #
 #   # copy and modify the weight/bias matrices at (i, j, l)
 #   if j == 0:
 #     new_bias = np.ndarray.copy(bias_copy[l])
-#     new_bias[i] += conf.NUMERICAL_DELTA
+#     new_bias[i] += nn_conf.NUMERICAL_DELTA
 #     bias_copy[l] = new_bias
 #   else:
 #     new_weights = np.ndarray.copy(weights_copy[l])
 #     # j - 1 due to lack of biases
-#     new_weights[i][j - 1] += conf.NUMERICAL_DELTA
+#     new_weights[i][j - 1] += nn_conf.NUMERICAL_DELTA
 #     weights_copy = new_weights
 #   # forward propagate
 #   out = feed_forward(x, weights_copy, bias_copy)
 #   # calculate costs for both sets of weights
-#   new_cost = cross_entropy(out[conf.LAYERS_NUM - 1], y)
+#   new_cost = cross_entropy(out[nn_conf.LAYERS_NUM - 1], y)
 #   # print("numerical costs: " + str(cost_1) + ", " + str(cost_2))
-#   return (new_cost - cost) / conf.NUMERICAL_DELTA
+#   return (new_cost - cost) / nn_conf.NUMERICAL_DELTA
 #
 #
 # def num_approx_aggregate(x, y, weights, bias):
 #   out = feed_forward(x, weights, bias)
-#   cost = cross_entropy(out[conf.LAYERS_NUM - 1], y)
-#   weights_gradients = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.matrix)
-#   for l in range(conf.LAYERS_NUM - 1):
-#     mat = np.zeros(shape=(conf.LAYERS_UNITS[l + 1], conf.LAYERS_UNITS[l] + 1))
-#     for i in range(conf.LAYERS_UNITS[l + 1]):
-#       for j in range(conf.LAYERS_UNITS[l] + 1):
+#   cost = cross_entropy(out[nn_conf.LAYERS_NUM - 1], y)
+#   weights_gradients = np.ndarray(nn_conf.LAYERS_NUM - 1, dtype=np.matrix)
+#   for l in range(nn_conf.LAYERS_NUM - 1):
+#     mat = np.zeros(shape=(nn_conf.LAYERS_UNITS[l + 1], nn_conf.LAYERS_UNITS[l] + 1))
+#     for i in range(nn_conf.LAYERS_UNITS[l + 1]):
+#       for j in range(nn_conf.LAYERS_UNITS[l] + 1):
 #         mat[i][j] = numerical_derivative_approximation(x, y, weights, bias,
 #                                                        i, j, l, cost)
 #     weights_gradients[l] = mat

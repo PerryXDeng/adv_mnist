@@ -5,6 +5,12 @@ import numpy as np
 
 
 def rand_init_weights(weights, bias):
+  """
+  randomly modifies weights and biases to avoid the zero-gradient problem
+  :param weights: weights
+  :param bias: bias
+  :return:
+  """
   for i in range(1, conf.LAYERS_NUM):
     dim = (conf.LAYERS_UNITS[i], conf.LAYERS_UNITS[i - 1])
     weights[i - 1] = 10 * (np.random.rand(dim[0], dim[1]) - 0.5)
@@ -12,6 +18,10 @@ def rand_init_weights(weights, bias):
 
 
 def gradient_descent_fakedata():
+  """
+  optimizes neural network on fake datasets, used for debugging
+  :return:
+  """
   (x_train, y_train, l_train) = dp.generate_x_y()
   weights = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.matrix)
   bias = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.ndarray)
@@ -38,6 +48,12 @@ def gradient_descent_fakedata():
 
 
 def gradient_descent(weights, bias):
+  """
+  optimizes neural network on actual datasets
+  :param weights: weights
+  :param bias: bias
+  :return: optimized weights and bias
+  """
   x_train, y_train, x_test, y_test, l_train, l_test = dp.load_datasets()
   for n in range(conf.NUM_EPOCHS):
     cost, gradients = nn.cost_derivatives(x_train, y_train, weights, bias)
@@ -70,6 +86,10 @@ def gradient_descent(weights, bias):
 
 
 def main():
+  """
+  trains the neural network according to configurations
+  :return:
+  """
   weights = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.matrix)
   bias = np.ndarray(conf.LAYERS_NUM - 1, dtype=np.ndarray)
   inp = input("Continue training from saved parameters? (y/n)\n").strip()
