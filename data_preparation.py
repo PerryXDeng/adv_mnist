@@ -58,11 +58,13 @@ def load_datasets():
   return normalize(x_train), y_train, normalize(x_test), y_test, l_train, l_test
 
 
-def save_image(x, filename):
+def save_image(x, filename, normalized=False):
   """
   turns one row of gray scale values into a png image, then saves it
   :param x: vector
   """
+  if normalized:
+    x = denormalize(x)
   matrix = np.reshape(x, (conf.IMAGE_LENGTH, conf.IMAGE_LENGTH))
   img = PIL.Image.fromarray(matrix, "L")
   img.save(filename)
@@ -85,6 +87,11 @@ def find_and_save_sample_images():
 
 def load_sample_image(label):
   filepath = "sample_images/" + str(label) + ".png"
+  normalized_vector = normalize(scipy.misc.imread(filepath).flatten())
+  return normalized_vector
+
+
+def load_image(filepath):
   normalized_vector = normalize(scipy.misc.imread(filepath).flatten())
   return normalized_vector
 

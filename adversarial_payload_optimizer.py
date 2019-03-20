@@ -40,11 +40,11 @@ def payload_derivatives(payload, desired_output, weights, bias):
   return cost, payload_gradients
 
 
-def optimize_payload(desired_output, payload):
+def optimize_payload(desired_output, original, label):
   """
   optimizes a payload
   :param desired_output: attacker's desired behavior of the neural network
-  :param payload: the image
+  :param original: the image
   :return: optmized payload
   """
   # load configuration from target neural network
@@ -54,19 +54,45 @@ def optimize_payload(desired_output, payload):
   neural_network_weights[1] = np.load("neural_network/weights_2.npy")
   neural_network_bias[0] = np.load("neural_network/bias_1.npy")
   neural_network_bias[1] = np.load("neural_network/bias_2.npy")
-  for n in range(conf.NUM_EPOCHS):
+  payload = np.copy(original)
+  epoch = 0
+  while True:
     cost, gradients = payload_derivatives(payload, desired_output,
                                           neural_network_weights,
                                           neural_network_bias)
-
-    print("Epoch %d, Cost %f" % (n, cost))
-    for l in range(nn_conf.LAYERS_NUM - 1):
-      payload -= gradients
+    difference = payload - original
+    constraint = conf.LAMBDA * np.sum(np.multiply(difference, difference)) / 2
+    cost += constraint
+    constraint_gradients = difference
+    payload -= conf.LEARNING_RATE * np.squeeze(np.asarray(gradients))
+    payload -= conf.LAMBDA * constraint_gradients
+    epoch += 1
+    if epoch % conf.EVAL_INTERVAL == 0:
+      print("Epoch %d, Cost %f" % (epoch, cost))
+      neural_output = nn.feed_forward(payload, neural_network_weights, neural_network_bias)[-1]
+      if neural_output[label] > conf.THRESHOLD and np.argmax(neural_output) == label:
+        print(neural_output[label])
+        print(np.argmax(neural_output))
+        print("Mission Accomplished")
+        break
   return payload
 
 
 def generate_payload(output_num, looklike_num):
   desired_output = dp.vectorized_label(output_num)
-  payload = dp.load_sample_image(looklike_num)
-  payload = optimize_payload(desired_output, payload)
+  original_image = dp.load_sample_image(looklike_num)
+  payload = optimize_payload(desired_output, original_image, output_num)
+  dp.save_image(original_image, "payload/original.png")
   dp.save_image(payload, "payload/output.png")
+
+
+def main():
+  output_num = int(input("What number do you want the neural network to classify the payload as?\n"))
+  looklike_num = int(input("What number do you want the payload to look like?\n"))
+  generate_payload(output_num, looklike_num)
+
+
+if __name__ == "__main__":
+#  generate_payload(3, 6)
+  original_image = dp.load_sample_image(3)
+  dp.save_image(original_image, "payload/original.png", normalized=True)
