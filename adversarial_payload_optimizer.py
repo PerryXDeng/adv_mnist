@@ -3,6 +3,7 @@ import numpy as np
 import neural_network_configuration as nn_conf
 import neural_network as nn
 import adversarial_configuration as conf
+import matplotlib.pyplot as plt
 
 
 def payload_derivatives(payload, desired_output, weights, bias):
@@ -55,6 +56,8 @@ def optimize_payload(desired_output, original, label):
   neural_network_bias[0] = np.load("neural_network/bias_1.npy")
   neural_network_bias[1] = np.load("neural_network/bias_2.npy")
   payload = np.copy(original)
+  neural_output = nn.feed_forward(original, neural_network_weights, neural_network_bias)[-1]
+  plt.bar(np.arange(10), neural_output[:, 0], color='b', label="Before")
   epoch = 0
   while True:
     cost, gradients = payload_derivatives(payload, desired_output,
@@ -73,6 +76,11 @@ def optimize_payload(desired_output, original, label):
         print(neural_output[label])
         print(np.argmax(neural_output))
         print("Mission Accomplished")
+        plt.bar(np.arange(10), neural_output[:, 0], color='r', label="After")
+        plt.title('Payload Classification')
+        plt.xlabel("Digit")
+        plt.ylabel("Probability")
+        plt.legend()
         break
   return payload
 
@@ -81,8 +89,15 @@ def generate_payload(output_num, looklike_num):
   desired_output = dp.vectorized_label(output_num)
   original_image = dp.normalize(dp.load_sample_image(looklike_num))
   payload = optimize_payload(desired_output, original_image, output_num)
-  dp.save_image(dp.denormalize(original_image * -1), "payload/original.png")
-  dp.save_image(dp.denormalize(payload * -1), "payload/output.png")
+  before = dp.denormalize(original_image * -1)
+  after = dp.denormalize(payload * -1)
+  dp.save_image(before, "payload/original.png")
+  dp.save_image(after, "payload/output.png")
+  plt.show()
+  plt.imshow(np.reshape(before, (nn_conf.IMAGE_LENGTH, nn_conf.IMAGE_LENGTH)), cmap="gray")
+  plt.show()
+  plt.imshow(np.reshape(after, (nn_conf.IMAGE_LENGTH, nn_conf.IMAGE_LENGTH)), cmap="gray")
+  plt.show()
 
 
 def main():
