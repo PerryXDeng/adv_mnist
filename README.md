@@ -5,5 +5,7 @@ a MNIST hand-written digit classification neural network with one hidden layer a
  
 Usage: python3 adversarial_payload_optimizer.py
 
+Required libraries: numpy, matplotlib
+
 Adjust optimization parameters in adversarial_configuration.py (lambda, threshold, and learning rate primarily)
 as you see fit.
