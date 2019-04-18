@@ -7,3 +7,8 @@ Usage: python3 adversarial_payload_optimizer.py
 
 Adjust optimization parameters in adversarial_configuration.py (lambda, threshold, and learning rate primarily)
 as you see fit.
+
+# Related Research
+Carlini, et al. “Towards Evaluating the Robustness of Neural Networks.” ArXiv.org, 22 Mar. 2017, arxiv.org/abs/1608.04644. 
+
+https://arxiv.org/pdf/1608.04644.pdf
